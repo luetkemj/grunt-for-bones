@@ -1,23 +1,21 @@
-# Bones Grunt Boilerplate
-
-> An attempt to create a simple boilerplate grunt setup for my
-favorite wordpress starter theme Bones.
+# Grunt for Bones
 
 ## Get Started
 1. Download [Bones](http://themble.com/bones/)
-2. Add Gruntfile.js and package.json to bones at root.
+2. Add [Gruntfile.js](https://raw.githubusercontent.com/luetkemj/grunt-for-bones/master/Gruntfile.js) and [package.json](https://raw.githubusercontent.com/luetkemj/grunt-for-bones/master/package.json) to bones at root.
 3. cd to bones
 4. npm install
 5. grunt compass
 6. grunt
 7. add to footer just before the closing body tag
-	```	
-	<script src="//localhost:35729/livereload.js"></script> 
-	```
+
+```	
+<script src="//localhost:35729/livereload.js"></script> 
+```
 
 ### Requirements
-* [sass](http://sass-lang.com/)
-* [compass](http://compass-style.org/)
+* [SASS](http://sass-lang.com/)
+* [Compass](http://compass-style.org/)
 * [Susy](http://susydocs.oddbird.net/en/latest/install/)
 * [Breakpoint](http://breakpoint-sass.com/)
 
