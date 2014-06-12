@@ -66,7 +66,16 @@ module.exports = function(grunt) {
         files: ['library/css/**/*.css'],
         options: { livereload: true }
       }
-    }
+    },
+
+    autoprefixer: {
+      multiple_files: {
+        expand: true,
+        flatten: true,
+        src: 'src/css/*.css', // -> src/css/file1.css, src/css/file2.css
+        dest: 'dest/css/' // -> dest/css/file1.css, dest/css/file2.css
+      }
+    }    
 
 
   });
@@ -77,6 +86,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+
+  grunt.loadNpmTasks('grunt-autoprefixer');
 
   // Default task(s).
   grunt.registerTask('default', ['uglify'], 'compass','cmq');

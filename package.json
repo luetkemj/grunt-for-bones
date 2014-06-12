@@ -9,6 +9,7 @@
     "css-parse": "~1.5.3",
     "grunt-combine-media-queries": "~1.0.15",
     "grunt-contrib-compass": "~0.8.0",
-    "grunt-contrib-watch": "~0.6.1"
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-autoprefixer": "~0.7.5"
   }
 }
