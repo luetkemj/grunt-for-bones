@@ -1,96 +1,194 @@
 module.exports = function(grunt) {
-
-/*
-@TODO: get some watch tasks running so i don't need to compile everything always
-
-@TODO: reconfigure the scss folder and use this plugin to install it.https://www.npmjs.org/package/grunt-curl
-
-@TODO: Get this repo setup outside of the bones theme. No reason to have it sit inside of a theme in the repo.
-*/
-
-  // Project configuration.
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    uglify: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-      },
-      build: {
-        src: 'library/js/scripts.js',
-        dest: 'library/js/scripts.min.js'
-      }
-    },
-
-    cmq: {
-      options: {
-        log: false
-      },
-      your_target: {
-        files: {
-          'library/css/tmp': ['library/css/*.css']
-        }
-      }
-    },
-
-// susy and compass can be finicky together. If you have problems try this thread on stack overflow. http://stackoverflow.com/questions/22299466/cant-get-sass-compass-susy-installed-on-osx-due-to-version-conflict
-    compass: {
-      dist: {
-        options: {
-          cssDir: 'library/css',
-          sassDir: 'library/scss',
-          imagesDir: 'library/images',
-          javascriptsDir: 'library/js',
-          environment: 'development',
-          relativeAssets: true,
-          outputStyle: 'expanded',
-          raw: 'preferred_syntax = :scss\n',
-          require: ['susy','breakpoint']
-        }
-      }
-    },
-           
-    jshint: {
-      all: ['Gruntfile.js', 'library/js/scripts.js']
-    },
-
-// @todo: get js running in livereload as well
-    watch: {
-      scss: {
-        files: ['library/scss/**/*.scss'],
-        tasks: ['compass:dist']
-      },
-      css: {
-        files: ['library/css/**/*.css']
-      },
-      livereload: {
-        files: ['library/css/**/*.css'],
-        options: { livereload: true }
-      }
-    },
-
-    autoprefixer: {
-      multiple_files: {
-        expand: true,
-        flatten: true,
-        src: 'src/css/*.css', // -> src/css/file1.css, src/css/file2.css
-        dest: 'dest/css/' // -> dest/css/file1.css, dest/css/file2.css
-      }
-    }    
-
-
-  });
-
-  // Load the plugins
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-combine-media-queries');
-  grunt.loadNpmTasks('grunt-contrib-compass');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-
-  grunt.loadNpmTasks('grunt-autoprefixer');
-
-  // Default task(s).
-  grunt.registerTask('default', ['uglify'], 'compass','cmq');
-  grunt.registerTask('lint', 'jshint');
-
+ 
+    // 1. All configuration goes here
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+ 
+        compass: {
+          dist: {
+            options: {
+              cssDir: 'library/css/dev',
+              sassDir: 'library/scss',
+              imagesDir: 'library/images',
+              javascriptsDir: 'library/js',
+              environment: 'development',
+              relativeAssets: true,
+              outputStyle: 'expanded',
+              raw: 'preferred_syntax = :scss\n',
+              require: ['susy','breakpoint']
+            }
+          }
+        },
+ 
+        autoprefixer: {
+            dist: {
+                files: {
+                    'library/css/dev/style-autoprefixed.css' : 'library/css/dev/style.css'
+                }
+            }
+        },
+ 
+        cmq: {
+            your_target: {
+                files: {
+                    'library/css/dev/cmq' : 'library/css/dev/style-autoprefixed.css'
+                }
+            }
+        },
+ 
+        cssmin: {
+            combine: {
+                files: {
+                    'library/css/style.css': ['library/css/dev/cmq/style-autoprefixed.css']
+                }
+            }
+        },
+ 
+        browserSync: {
+            files: {
+                src : 'library/css/style.css'
+            }
+        },
+ 
+        jshint: {
+            all: [
+                'library/js/*.js',
+            ],
+            options: {
+                jshintrc: 'library/js/.jshintrc'
+            }
+        },
+ 
+        concat: {  
+            footer: {
+                src: [
+                    'library/js/libs/*.js', // All JS in the libs folder
+                    'library/js/scripts.js'  // This specific file
+                ],
+                dest: 'library/js/main.js',
+            }
+        },
+ 
+        uglify: {
+            footer: {
+                src: 'library/js/main.js',
+                dest: 'library/js/main.min.js'
+            }
+        },
+ 
+        watch: {
+            scss: {
+                files: ['library/scss/**/*.scss'],
+                tasks: ['default']
+            },
+            css: {
+                files: ['library/css/**/*.css']
+            },
+            js: {
+                files: ['library/js/**/*'],
+                tasks: ['concat', 'uglify']
+            },
+            livereload: {
+                files: ['**/*.html', '**/*.php', '**/*.js', '**/*.css', '!**/node_modules/**'], // add files to watch to trigger a reload
+                options: { livereload: true }
+            }
+        },
+ 
+        imagemin: {
+            dynamic: {
+                files: [{
+                    expand: true,
+                    cwd: 'library/images/dev/',
+                    src: ['**/*.{png,jpg,gif,svg,ico}'],
+                    dest: 'library/images/'
+                }]
+            }
+        },
+ 
+        clean: {
+            test: [
+                'library/images/dev/*' //uncomment to clean img dir too
+            ]
+        },
+ 
+        devcode : {
+          options :
+          {
+            html: true,        // html files parsing?
+            js: true,          // javascript files parsing?
+            css: true,         // css files parsing?
+            clean: true,       // removes devcode comments even if code was not removed
+            block: {
+              open: 'devcode', // with this string we open a block of code
+              close: 'endcode' // with this string we close a block of code
+            },
+            dest: '/'       // default destination which overwrittes environment variable
+          },
+          dist : {             // settings for task used with 'devcode:dist'
+            options: {
+                source: '/',
+                dest: '/',
+                env: 'production'
+            }
+          }
+        },
+ 
+ 
+    });
+ 
+    // 3. Where we tell Grunt we plan to use this plug-in.
+ 
+    // Sass
+    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-combine-media-queries');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+ 
+    // JS
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+ 
+    // Images
+    grunt.loadNpmTasks('grunt-contrib-imagemin');
+ 
+    // Clean
+    grunt.loadNpmTasks('grunt-contrib-clean');
+ 
+    // DevCode
+    grunt.loadNpmTasks('grunt-devcode');
+   
+    // Browser Reload + File Watch
+    grunt.loadNpmTasks('grunt-concurrent');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-browser-sync');
+ 
+ 
+    // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
+ 
+    // cleans directories, does everything for css, js, and images for deploy
+    grunt.registerTask('prod', ['clean', 'img', 'compass', 'autoprefixer', 'cmq', 'cssmin', 'concat', 'uglify']);
+ 
+    // runs Sass, autoprefixer, media query combine, and minify
+    grunt.registerTask('css', ['watch:sass']);
+ 
+    // combines and minifies js on js changes
+    grunt.registerTask('js', ['watch:js']);
+ 
+    // reloads on any html or php changes
+    // you can add more files to watch in the settings
+    grunt.registerTask('reload', ['watch:livereload']);
+ 
+    // injects new css into open page on css change
+    grunt.registerTask('sync', ['browserSync']);
+ 
+    // opimizes images in dev and moves them to prod
+    grunt.registerTask('img', ['imagemin']);
+ 
+    // deletes all files in build directories (be careful with this one)
+    grunt.registerTask('delete', ['clean']);
+ 
+    // compiles sass once
+    grunt.registerTask('default', ['compass', 'autoprefixer', 'cmq', 'cssmin']);
+ 
 };
