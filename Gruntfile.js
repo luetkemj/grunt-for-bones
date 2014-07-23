@@ -23,7 +23,7 @@ module.exports = function(grunt) {
         autoprefixer: {
             dist: {
                 files: {
-                    'library/css/dev/style-autoprefixed.css' : 'library/css/dev/style.css'
+                    'library/css/dev/style.css' : 'library/css/dev/style.css'
                 }
             }
         },
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
         cmq: {
             your_target: {
                 files: {
-                    'library/css/dev/cmq' : 'library/css/dev/style-autoprefixed.css'
+                    'library/css' : 'library/css/dev/style.css'
                 }
             }
         },
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
         cssmin: {
             combine: {
                 files: {
-                    'library/css/style.css': ['library/css/dev/cmq/style-autoprefixed.css']
+                    'library/css/style.min.css': ['library/css/style.css']
                 }
             }
         },
