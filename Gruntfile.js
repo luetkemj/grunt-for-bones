@@ -1,41 +1,74 @@
 module.exports = function(grunt) {
- 
+
     // 1. All configuration goes here
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
- 
-        compass: {
-          dist: {
-            options: {
-              cssDir: 'library/css/dev',
-              sassDir: 'library/scss',
-              imagesDir: 'library/images',
-              javascriptsDir: 'library/js',
-              environment: 'development',
-              relativeAssets: true,
-              outputStyle: 'expanded',
-              raw: 'preferred_syntax = :scss\n',
-              require: ['susy','breakpoint']
-            }
+
+        // Grunt-sass
+        sass: {
+          app: {
+            files: [{
+              expand: true,
+              cwd: 'library/scss',
+              src: ['*.scss'],
+              dest: 'library/css',
+              ext: '.css'
+            }]
+          },
+          options: {
+            sourceMap: true,
+            outputStyle: 'nested',
+            imagePath: "library/images",
           }
         },
- 
+
+        watch: {
+            scss: {
+                files: ['library/scss/**/*.scss'],
+                tasks: ['sass']
+            },
+            css: {
+                files: ['library/css/**/*.css']
+            },
+            js: {
+                files: ['library/js/**/*.js','!library/js/dist/**/*.js'],
+                tasks: ['concat']
+            },
+            livereload: {
+                files: ['**/*.html', '**/*.php', '**/*.js', '**/*.css', '!**/node_modules/**'],
+                options: { livereload: true }
+            }
+        },
+
+        browserSync: {
+            files: {
+                src : 'library/css/style.css'
+            },
+            options: {
+                watchTask: true // < VERY important
+            }
+            // ,
+            // options: {
+            //     proxy: "vcuartsbones.dev"
+            // }
+        },
+
         autoprefixer: {
             dist: {
                 files: {
-                    'library/css/dev/style.css' : 'library/css/dev/style.css'
+                    'library/css/style.css' : 'library/css/style.css'
                 }
             }
         },
- 
+
         cmq: {
             your_target: {
                 files: {
-                    'library/css' : 'library/css/dev/style.css'
+                    'library/css' : 'library/css/style.css'
                 }
             }
         },
- 
+
         cssmin: {
             combine: {
                 files: {
@@ -43,13 +76,7 @@ module.exports = function(grunt) {
                 }
             }
         },
- 
-        browserSync: {
-            files: {
-                src : 'library/css/style.css'
-            }
-        },
- 
+
         jshint: {
             all: [
                 'library/js/*.js',
@@ -58,137 +85,90 @@ module.exports = function(grunt) {
                 jshintrc: 'library/js/.jshintrc'
             }
         },
- 
-        concat: {  
+
+        concat: {
             footer: {
                 src: [
                     'library/js/libs/*.js', // All JS in the libs folder
-                    'library/js/scripts.js'  // This specific file
+                    'library/js/scripts.js',  // This specific file
+                    '!library/js/libs/modernizr.custom.min.js'
                 ],
-                dest: 'library/js/main.js',
+                dest: 'library/js/dist/main.js',
             }
         },
- 
+
         uglify: {
             footer: {
-                src: 'library/js/main.js',
-                dest: 'library/js/main.min.js'
+                src: 'library/js/dist/main.js',
+                dest: 'library/js/dist/main.min.js'
             }
         },
- 
-        watch: {
-            scss: {
-                files: ['library/scss/**/*.scss'],
-                tasks: ['default']
-            },
-            css: {
-                files: ['library/css/**/*.css']
-            },
-            js: {
-                files: ['library/js/**/*'],
-                tasks: ['concat', 'uglify']
-            },
-            livereload: {
-                files: ['**/*.html', '**/*.php', '**/*.js', '**/*.css', '!**/node_modules/**'], // add files to watch to trigger a reload
-                options: { livereload: true }
-            }
-        },
- 
+
         imagemin: {
             dynamic: {
                 files: [{
                     expand: true,
-                    cwd: 'library/images/dev/',
+                    cwd: 'library/images/',
                     src: ['**/*.{png,jpg,gif,svg,ico}'],
                     dest: 'library/images/'
                 }]
             }
         },
- 
-        clean: {
-            test: [
-                'library/images/dev/*' //uncomment to clean img dir too
-            ]
-        },
- 
-        devcode : {
-          options :
-          {
-            html: true,        // html files parsing?
-            js: true,          // javascript files parsing?
-            css: true,         // css files parsing?
-            clean: true,       // removes devcode comments even if code was not removed
-            block: {
-              open: 'devcode', // with this string we open a block of code
-              close: 'endcode' // with this string we close a block of code
-            },
-            dest: '/'       // default destination which overwrittes environment variable
-          },
-          dist : {             // settings for task used with 'devcode:dist'
-            options: {
-                source: '/',
-                dest: '/',
-                env: 'production'
+
+        concurrent: {
+            watch: {
+                tasks: ['watch', 'sass', 'browserSync'],
+                options: {
+                    logConcurrentOutput: true
+                }
             }
-          }
         },
- 
- 
+
+        copy: {
+          main: {
+            files: [
+              // includes files within path
+              // {expand: true, src: ['path/*'], dest: 'dest/', filter: 'isFile'},
+
+              // includes files within path and its sub-directories
+              {expand: true, src: ['**','!build/**','!bower_components/**','!node_modules/**','!.git/**'], dest: 'build/'},
+
+              // makes all src relative to cwd
+              // {expand: true, cwd: 'path/', src: ['**'], dest: 'dest/'},
+
+              // flattens results to a single level
+              // {expand: true, flatten: true, src: ['path/**'], dest: 'dest/', filter: 'isFile'},
+            ],
+          },
+        },
     });
- 
-    // 3. Where we tell Grunt we plan to use this plug-in.
- 
+
+    // 3. Where we tell Grunt what plugins to use
+
     // Sass
-    grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-combine-media-queries');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
- 
+
     // JS
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
- 
+
     // Images
     grunt.loadNpmTasks('grunt-contrib-imagemin');
- 
-    // Clean
-    grunt.loadNpmTasks('grunt-contrib-clean');
- 
-    // DevCode
-    grunt.loadNpmTasks('grunt-devcode');
-   
+
     // Browser Reload + File Watch
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-browser-sync');
- 
- 
+
+    // Build Related
+    grunt.loadNpmTasks('grunt-contrib-copy');
+
     // 4. Where we tell Grunt what to do when we type "grunt" into the terminal.
- 
-    // cleans directories, does everything for css, js, and images for deploy
-    grunt.registerTask('prod', ['clean', 'img', 'compass', 'autoprefixer', 'cmq', 'cssmin', 'concat', 'uglify']);
- 
-    // runs Sass, autoprefixer, media query combine, and minify
-    grunt.registerTask('css', ['watch:sass']);
- 
-    // combines and minifies js on js changes
-    grunt.registerTask('js', ['watch:js']);
- 
-    // reloads on any html or php changes
-    // you can add more files to watch in the settings
-    grunt.registerTask('reload', ['watch:livereload']);
- 
-    // injects new css into open page on css change
-    grunt.registerTask('sync', ['browserSync']);
- 
-    // opimizes images in dev and moves them to prod
-    grunt.registerTask('img', ['imagemin']);
- 
-    // deletes all files in build directories (be careful with this one)
-    grunt.registerTask('delete', ['clean']);
- 
-    // compiles sass once
-    grunt.registerTask('default', ['compass', 'autoprefixer', 'cmq', 'cssmin']);
- 
+    grunt.registerTask('init', ['build']);
+    grunt.registerTask('dev', ['browserSync','watch']);
+    grunt.registerTask('build', ['sass', 'autoprefixer', 'cmq', 'cssmin', 'concat', 'uglify', 'copy']);
 };

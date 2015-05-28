@@ -6,19 +6,19 @@
     "url": "git://github.com/luetkemj/grunt-for-bones.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-autoprefixer": "~0.7.2",
-    "grunt-browser-sync": "~0.8.2",
-    "grunt-combine-media-queries": "~1.0.15",
-    "grunt-concurrent": "^0.5.0",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-compass": "~0.8.0",
-    "grunt-contrib-concat": "~0.4.0",
-    "grunt-contrib-cssmin": "~0.9.0",
-    "grunt-contrib-imagemin": "~0.7.1",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-devcode": "~0.0.4-c"
+    "grunt": "latest",
+    "grunt-autoprefixer": "latest",
+    "grunt-browser-sync": "latest",
+    "grunt-combine-media-queries": "latest",
+    "grunt-concurrent": "latest",
+    "grunt-contrib-concat": "latest",
+    "grunt-contrib-copy": "latest",
+    "grunt-contrib-cssmin": "latest",
+    "grunt-contrib-imagemin": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-devcode": "latest",
+    "grunt-sass": "latest"
   }
 }

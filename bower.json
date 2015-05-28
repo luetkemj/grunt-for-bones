@@ -1,0 +1,22 @@
+{
+  "name": "grunt-for-bones",
+  "version": "0.1.1",
+  "homepage": "https://github.com/luetkemj/grunt-for-bones",
+  "authors": [
+    "luetkemj <luetkemj@gmail.com>",
+    "Cody W <cody@codywhitby.net>"
+  ],
+  "description": "Grunt for Bones",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "susy": "~2.2.2",
+    "breakpoint-sass": "~2.5.0"
+  }
+}

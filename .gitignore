@@ -1,1 +1,20 @@
+############
+## Grunt
+############
+
+node_modules/
+
+############
+## Bower
+############
+
+bower_components/
+
+############
+## Misc
+############
+
+*.scssc
+library/css/*
+build/
 node_modules/
